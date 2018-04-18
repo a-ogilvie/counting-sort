@@ -8,9 +8,20 @@ class CountingSort {
     this.array = array;
   }
 
-  /** Sort this.array using the counting sort algorithm. */
-  sort() {
-    const arrayValues = {};
+  /**
+   * Sort this.array using the counting sort algorithm and visualise.
+   * @param {HTMLElement} arrayElem
+   * @param {HTMLElement} objectElem
+   */
+  sort(arrayElem, objectElem) {
+    const arrayValues = { a: "foo", b: "bar" };
+    Object.defineProperty(arrayValues, "toString", {
+      value: function stringObject() {
+        return Object.entries(this);
+      },
+      enumerable: false,
+    });
+    console.log(arrayValues.toString());
     let maxValue = 0;
     this.array.forEach((value) => {
       if (maxValue < value) maxValue = value;
@@ -29,6 +40,25 @@ class CountingSort {
       }
     }
     this.array = result;
+  }
+
+  /**
+   * Generate an HTML element from the provided item.
+   * @param {*} item
+   * @returns {HTMLElement}
+   */
+  generateNewElem(item) {
+    const container = document.createElement("div");
+    const textNode = document.createTextNode();
+    container.appendChild(textNode);
+    return container;
+  }
+
+  createCheesyTitle(slogan) {
+    const container = document.createElement("h1");
+    const textNode = document.createTextNode(slogan);
+    container.appendChild(textNode);
+    return container;
   }
 }
 
