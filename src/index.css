@@ -2,12 +2,16 @@ body {
   background-color: #55b491;
 }
 
-#array {
+#unsorted-array,
+#counting-array,
+#sorted-array {
   display: flex;
   justify-content: center;
 }
 
-.unsorted-item {
+.unsorted-item,
+.counting-item,
+.sorted-item {
   border: 2px solid black;
   width: 25px;
   height: 25px;
