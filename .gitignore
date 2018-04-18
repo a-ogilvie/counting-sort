@@ -24,3 +24,6 @@ yarn-error.log*
 production-server/
 .next/
 junit/
+
+# Webpack-generated bundle
+/public
