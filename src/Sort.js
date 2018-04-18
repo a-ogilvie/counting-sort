@@ -25,6 +25,8 @@ class CountingSort {
       }
     });
 
+    const countsHistory = Object.entries(counts);
+
     const result = [];
     for (let i = 0; i <= maxValue; i++) {
       while (counts[i] && counts[i] > 0) {
@@ -34,7 +36,7 @@ class CountingSort {
     }
     this.array = result;
     console.log(result);
-    return Object.entries(counts);
+    return countsHistory;
   }
 }
 
