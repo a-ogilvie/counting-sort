@@ -9,8 +9,8 @@ class CountingSort {
   }
 
   /**
-   * Sort this.array using the counting sort algorithm and return the counts.
-   * @returns {Object}
+   * Sort this.array using the counting sort algorithm and return the entries of the counts object.
+   * @returns {Array}
    */
   sort() {
     const counts = {};
@@ -34,7 +34,7 @@ class CountingSort {
     }
     this.array = result;
     console.log(result);
-    return counts;
+    return Object.entries(counts);
   }
 }
 
