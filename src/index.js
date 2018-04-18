@@ -27,6 +27,7 @@ for (let i = 0; i < MAXVALUE; i++) {
   const tableData = document.createElement("div");
   tableData.id = `counting-item-${i}`;
   tableData.className = "counting-item";
+  tableData.textContent = 0;
   countingTable.appendChild(tableData);
 }
 
@@ -39,5 +40,15 @@ for (let i = 0; i < ARRAYSIZE; i++) {
 
 const sort = new Sort(unsortedArray);
 const counts = sort.sort();
+
+counts.forEach((count) => {
+  const countItem = document.getElementById(`counting-item-${count[0]}`);
+  countItem.textContent = count[1];
+});
+
+sort.array.forEach((value, index) => {
+  const sortedItem = document.getElementById(`sorted-item-${index}`);
+  sortedItem.textContent = value;
+});
 
 console.log(counts);
