@@ -4,11 +4,13 @@ const Sort = require("./Sort");
 // A link to our styles!
 require("./index.css");
 
-const MAXVALUE = 25;
+// SETUP
+
+const MAXVALUE = 30;
 
 // User-configurable animation settings
 let delay = 500;
-let arraySize = 30;
+let arraySize = 15;
 
 // Page elements
 const unsortedTable = document.getElementById("unsorted-array");
@@ -19,6 +21,7 @@ const arraySizeSelector = document.querySelector(
   '#controls [name="array-size"]'
 );
 const startButton = document.querySelector('#controls [name="start"]');
+const stopButton = document.querySelector('#controls [name="stop"]');
 
 // TimerIds
 let countingId;
@@ -34,22 +37,41 @@ const arrayGeneration = {
 // Iteration counting variables
 const counters = {
   i: 0,
-  counterValue: null,
   j: 0,
+  counterValue: null,
 };
 
+let isAnimationRunning = false;
+
+// Event Listeners
 speedSelector.addEventListener("change", changeSpeed);
-startButton.addEventListener("click", () => {
+arraySizeSelector.addEventListener("change", () => {
   arraySize = Math.round(Number(arraySizeSelector.value));
+  stopAnimation();
   generatePageLayout();
-  countingId = setTimeout(generateCountingArray, delay);
+  if (isAnimationRunning) {
+    startAnimation();
+    countingId = setTimeout(animateCountingArray, delay);
+  }
+});
+startButton.addEventListener("click", () => {
+  stopAnimation();
+  resetCounters();
+  isAnimationRunning = true;
+  startAnimation();
+  countingId = setTimeout(animateCountingArray, delay);
+});
+stopButton.addEventListener("click", () => {
+  stopAnimation();
+  isAnimationRunning = false;
 });
 
-function changeSpeed() {
-  delay = 2200 - this.value;
-}
+// Generate empty array placeholders
+generatePageLayout();
 
-function generatePageLayout() {
+// FUNCTIONS
+
+function clearPage() {
   while (unsortedTable.firstChild) {
     unsortedTable.firstChild.remove();
   }
@@ -59,46 +81,97 @@ function generatePageLayout() {
   while (sortedTable.firstChild) {
     sortedTable.firstChild.remove();
   }
+}
 
-  arrayGeneration.unsortedArray = [];
-  // Generate unsortedArray and display vis on page
+function generatePageLayout() {
+  clearPage();
+
+  // Generate unsortedArray placeholder and display
   for (let i = 0; i < arraySize; i++) {
-    const randomNumber = Math.floor(Math.random() * MAXVALUE);
+    const tableData = document.createElement("div");
+    tableData.className = "unsorted-item";
+    unsortedTable.appendChild(tableData);
+  }
+
+  generateCountingArray();
+  generateSortingArray();
+}
+
+function changeSpeed() {
+  delay = 2200 - this.value;
+}
+
+function generateUnsortedArray() {
+  for (let i = 0; i < arraySize; i++) {
+    const randomNumber = Math.ceil(Math.random() * MAXVALUE);
     arrayGeneration.unsortedArray.push(randomNumber);
     const tableData = document.createElement("div");
     tableData.textContent = randomNumber;
     tableData.id = `unsorted-item-${i}`;
     tableData.className = "unsorted-item";
+    tableData.style.backgroundColor = setBackgroundColor(randomNumber);
     unsortedTable.appendChild(tableData);
   }
+}
 
-  // Generate empty counting array vis
-  for (let i = 0; i < MAXVALUE; i++) {
+function generateCountingArray() {
+  for (let i = 1; i <= MAXVALUE; i++) {
     const tableContainer = document.createElement("div");
     const tableLabel = document.createElement("div");
     const tableData = document.createElement("div");
     tableLabel.textContent = `${i}`;
+    tableLabel.className = "counting-label";
     tableData.id = `counting-item-${i}`;
     tableData.className = "counting-item";
     tableData.textContent = 0;
+    tableData.style.backgroundColor = setBackgroundColor(i);
     tableContainer.appendChild(tableLabel);
     tableContainer.appendChild(tableData);
     countingTable.appendChild(tableContainer);
   }
+}
 
-  // Generate empty sortedArray vis
+function generateSortingArray() {
   for (let i = 0; i < arraySize; i++) {
     const tableData = document.createElement("div");
     tableData.id = `sorted-item-${i}`;
     tableData.className = "sorted-item";
     sortedTable.appendChild(tableData);
   }
+}
+
+function setBackgroundColor(i) {
+  // Colour hex values for items
+  const colours = {
+    red: "#FF4242",
+    orange: "#FCA22D",
+    yellow: "#E2E539",
+    green: "#3BF994",
+    blue: "#3B84F9",
+    purple: "#DD3BF9",
+  };
+
+  if (i <= 5) return colours.red;
+  else if (i <= 10) return colours.orange;
+  else if (i <= 15) return colours.yellow;
+  else if (i <= 20) return colours.green;
+  else if (i <= 25) return colours.blue;
+  else return colours.purple;
+}
+
+function startAnimation() {
+  clearPage();
+
+  arrayGeneration.unsortedArray = [];
+  generateUnsortedArray();
+  generateCountingArray();
+  generateSortingArray();
 
   arrayGeneration.sort = new Sort(arrayGeneration.unsortedArray);
   arrayGeneration.counts = arrayGeneration.sort.sort();
 }
 
-function generateCountingArray() {
+function animateCountingArray() {
   // Remove the selected class from the previous iteration
   if (counters.i > 0) {
     const previousArrayItem = document.getElementById(
@@ -113,7 +186,7 @@ function generateCountingArray() {
   // Reset the counter and start the next animation
   if (counters.i === arraySize) {
     counters.i = 0;
-    sortingId = setTimeout(generateSortedArray, delay);
+    sortingId = setTimeout(animateSortedArray, delay);
     return;
   }
   // Add selected class and insert correct number
@@ -129,13 +202,13 @@ function generateCountingArray() {
   counters.i++;
 
   // Advance to next iteration
-  countingId = setTimeout(generateCountingArray, delay);
+  countingId = setTimeout(animateCountingArray, delay);
 }
 
-function generateSortedArray() {
+function animateSortedArray() {
   // Stop animating when we reach the end
   if (counters.j >= arrayGeneration.counts.length) {
-    clearInterval(sortingId);
+    clearTimeout(sortingId);
   }
   // Clear selected class from previous iteration
   if (counters.i > 0) {
@@ -153,6 +226,7 @@ function generateSortedArray() {
     counters.i = 0;
     counters.j = 0;
     counters.counterValue = null;
+    isAnimationRunning = false;
     return;
   }
   // Animate!
@@ -175,6 +249,9 @@ function generateSortedArray() {
   }
   sortedItem.classList.add("selected");
   sortedItem.textContent = arrayGeneration.counts[counters.j][0];
+  sortedItem.style.backgroundColor = setBackgroundColor(
+    arrayGeneration.counts[counters.j][0]
+  );
   counters.i++;
   counters.counterValue--;
   if (counters.counterValue === 0) {
@@ -182,5 +259,16 @@ function generateSortedArray() {
     counters.j++;
     counters.counterValue--;
   }
-  sortingId = setTimeout(generateSortedArray, delay);
+  sortingId = setTimeout(animateSortedArray, delay);
+}
+
+function stopAnimation() {
+  clearTimeout(countingId);
+  clearTimeout(sortingId);
+}
+
+function resetCounters() {
+  counters.i = 0;
+  counters.j = 0;
+  counters.counterValue = null;
 }
