@@ -6,15 +6,13 @@
   "env": {
     "es6": true,
     "node": true,
-    "mocha": true
+    "mocha": true,
+    "browser": true
   },
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": "error",
     "no-console": 0
-  },
-  "globals": {
-    "document": true
   },
   "extends": ["eslint:recommended", "plugin:prettier/recommended"]
 }
