@@ -47,10 +47,10 @@ const counts = sort.sort();
 //   countItem.textContent = count[1];
 // });
 
-sort.array.forEach((value, index) => {
-  const sortedItem = document.getElementById(`sorted-item-${index}`);
-  sortedItem.textContent = value;
-});
+// sort.array.forEach((value, index) => {
+//   const sortedItem = document.getElementById(`sorted-item-${index}`);
+//   sortedItem.textContent = value;
+// });
 
 console.log({ counts });
 
@@ -71,7 +71,11 @@ function generateCountingArray() {
     );
     previousArrayItem.classList.remove("selected");
     previousCountItem.classList.remove("selected");
-    if (i === ARRAYSIZE) return;
+  }
+  if (i === ARRAYSIZE) {
+    i = 0;
+    sortingInterval = setInterval(generateSortedArray, DELAY);
+    return;
   }
   const arrayItem = document.getElementById(`unsorted-item-${i}`);
   const countItem = document.getElementById(
@@ -84,7 +88,43 @@ function generateCountingArray() {
   i++;
 }
 
+let nextCount = null;
+let j = 0;
+
+function generateSortedArray() {
+  if (j >= counts.length) {
+    clearInterval(sortingInterval);
+  }
+  if (i > 0) {
+    const previousSortedItem = document.getElementById(`sorted-item-${i - 1}`);
+    const previousCountingItem = document.getElementById(
+      `counting-item-${counts[j - 1][0]}`
+    );
+    previousSortedItem.classList.remove("selected");
+    previousCountingItem.classList.remove("selected");
+  }
+  if (i === ARRAYSIZE) {
+    i = 0;
+    return;
+  }
+  const sortedItem = document.getElementById(`sorted-item-${i}`);
+  const countingItem = document.getElementById(`counting-item-${counts[j][0]}`);
+  if (nextCount === null) {
+    nextCount = counts[j][1];
+  }
+  countingItem.classList.add("selected");
+  sortedItem.classList.add("selected");
+  sortedItem.textContent = counts[j][0];
+  i++;
+  nextCount--;
+  if (nextCount === 0) {
+    j++;
+    nextCount = null;
+  }
+}
+
 let countingInterval = setInterval(generateCountingArray, DELAY);
+let sortingInterval;
 
 // Use another run of setTimeouts to loop over counting array
 // each setTimeout also adds to sorted array
