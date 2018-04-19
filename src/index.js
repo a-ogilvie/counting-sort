@@ -18,6 +18,7 @@ for (let i = 0; i < ARRAYSIZE; i++) {
   unsortedArray.push(randomNumber);
   const tableData = document.createElement("div");
   tableData.textContent = randomNumber;
+  tableData.id = `unsorted-item-${i}`;
   tableData.className = "unsorted-item";
   unsortedTable.appendChild(tableData);
 }
@@ -41,14 +42,53 @@ for (let i = 0; i < ARRAYSIZE; i++) {
 const sort = new Sort(unsortedArray);
 const counts = sort.sort();
 
-counts.forEach((count) => {
-  const countItem = document.getElementById(`counting-item-${count[0]}`);
-  countItem.textContent = count[1];
-});
+// counts.forEach((count) => {
+//   const countItem = document.getElementById(`counting-item-${count[0]}`);
+//   countItem.textContent = count[1];
+// });
 
 sort.array.forEach((value, index) => {
   const sortedItem = document.getElementById(`sorted-item-${index}`);
   sortedItem.textContent = value;
 });
 
-console.log(counts);
+console.log({ counts });
+
+// Loop over first array with consecutive setTimeouts
+// each setTimeout also adds to counting array
+
+const DELAY = 500;
+let i = 0;
+
+function generateCountingArray() {
+  if (i >= ARRAYSIZE) {
+    clearInterval(countingInterval);
+  }
+  if (i > 0) {
+    const previousArrayItem = document.getElementById(`unsorted-item-${i - 1}`);
+    const previousCountItem = document.getElementById(
+      `counting-item-${unsortedArray[i - 1]}`
+    );
+    previousArrayItem.classList.remove("selected");
+    previousCountItem.classList.remove("selected");
+    if (i === ARRAYSIZE) return;
+  }
+  const arrayItem = document.getElementById(`unsorted-item-${i}`);
+  const countItem = document.getElementById(
+    `counting-item-${unsortedArray[i]}`
+  );
+  arrayItem.classList.add("selected");
+  countItem.classList.add("selected");
+  countItem.textContent = Number(countItem.textContent) + 1;
+
+  i++;
+}
+
+let countingInterval = setInterval(generateCountingArray, DELAY);
+
+// Use another run of setTimeouts to loop over counting array
+// each setTimeout also adds to sorted array
+
+// REMEMBER
+// Create a class which adds a highlight to an array cell,
+// and add it then remove it again sequentially
