@@ -5,8 +5,12 @@ const Sort = require("./Sort");
 require("./index.css");
 
 const MAXVALUE = 30;
+
+// User-configurable animation settings
 let delay = 1000;
 let arraySize = 30;
+
+// Page elements
 const unsortedTable = document.getElementById("unsorted-array");
 const countingTable = document.getElementById("counting-array");
 const sortedTable = document.getElementById("sorted-array");
@@ -16,9 +20,23 @@ const arraySizeSelector = document.querySelector(
 );
 const startButton = document.querySelector('#controls [name="start"]');
 
-function changeSpeed() {
-  delay = this.value;
-}
+// TimerIds
+let countingId;
+let sortingId;
+
+// Array generation variables
+const arrayGeneration = {
+  unsortedArray: null,
+  sort: null,
+  counts: null,
+};
+
+// Iteration counting variables
+const counters = {
+  i: 0,
+  counterValue: null,
+  j: 0,
+};
 
 speedSelector.addEventListener("change", changeSpeed);
 startButton.addEventListener("click", () => {
@@ -27,9 +45,9 @@ startButton.addEventListener("click", () => {
   countingId = setTimeout(generateCountingArray, delay);
 });
 
-let unsortedArray;
-let sort;
-let counts;
+function changeSpeed() {
+  delay = this.value;
+}
 
 function generatePageLayout() {
   while (unsortedTable.firstChild) {
@@ -42,11 +60,11 @@ function generatePageLayout() {
     sortedTable.firstChild.remove();
   }
 
-  unsortedArray = [];
+  arrayGeneration.unsortedArray = [];
   // Generate unsortedArray and display vis on page
   for (let i = 0; i < arraySize; i++) {
     const randomNumber = Math.floor(Math.random() * MAXVALUE);
-    unsortedArray.push(randomNumber);
+    arrayGeneration.unsortedArray.push(randomNumber);
     const tableData = document.createElement("div");
     tableData.textContent = randomNumber;
     tableData.id = `unsorted-item-${i}`;
@@ -71,97 +89,93 @@ function generatePageLayout() {
     sortedTable.appendChild(tableData);
   }
 
-  sort = new Sort(unsortedArray);
-  counts = sort.sort();
+  arrayGeneration.sort = new Sort(arrayGeneration.unsortedArray);
+  arrayGeneration.counts = arrayGeneration.sort.sort();
 }
-
-console.log({ counts });
-
-let i = 0;
 
 function generateCountingArray() {
   // Remove the selected class from the previous iteration
-  if (i > 0) {
-    const previousArrayItem = document.getElementById(`unsorted-item-${i - 1}`);
+  if (counters.i > 0) {
+    const previousArrayItem = document.getElementById(
+      `unsorted-item-${counters.i - 1}`
+    );
     const previousCountItem = document.getElementById(
-      `counting-item-${unsortedArray[i - 1]}`
+      `counting-item-${arrayGeneration.unsortedArray[counters.i - 1]}`
     );
     previousArrayItem.classList.remove("selected");
     previousCountItem.classList.remove("selected");
   }
   // Reset the counter and start the next animation
-  if (i === arraySize) {
-    i = 0;
+  if (counters.i === arraySize) {
+    counters.i = 0;
     sortingId = setTimeout(generateSortedArray, delay);
     return;
   }
   // Add selected class and insert correct number
-  const arrayItem = document.getElementById(`unsorted-item-${i}`);
+  const arrayItem = document.getElementById(`unsorted-item-${counters.i}`);
   const countItem = document.getElementById(
-    `counting-item-${unsortedArray[i]}`
+    `counting-item-${arrayGeneration.unsortedArray[counters.i]}`
   );
   arrayItem.classList.add("selected");
   countItem.classList.add("selected");
   countItem.textContent = Number(countItem.textContent) + 1;
 
   // Advance index counter
-  i++;
+  counters.i++;
 
   // Advance to next iteration
   countingId = setTimeout(generateCountingArray, delay);
 }
 
-let counterValue = null;
-let j = 0;
-
 function generateSortedArray() {
   // Stop animating when we reach the end
-  if (j >= counts.length) {
+  if (counters.j >= arrayGeneration.counts.length) {
     clearInterval(sortingId);
   }
   // Clear selected class from previous iteration
-  if (i > 0) {
-    const previousSortedItem = document.getElementById(`sorted-item-${i - 1}`);
+  if (counters.i > 0) {
+    const previousSortedItem = document.getElementById(
+      `sorted-item-${counters.i - 1}`
+    );
     previousSortedItem.classList.remove("selected");
   }
   // Finish here when we reach the end
-  if (i === arraySize) {
+  if (counters.i === arraySize) {
     const previousCountingItem = document.getElementById(
-      `counting-item-${counts[j - 1][0]}`
+      `counting-item-${arrayGeneration.counts[counters.j - 1][0]}`
     );
     previousCountingItem.classList.remove("selected");
-    i = 0;
-    j = 0;
-    counterValue = null;
+    counters.i = 0;
+    counters.j = 0;
+    counters.counterValue = null;
     return;
   }
   // Animate!
-  const sortedItem = document.getElementById(`sorted-item-${i}`);
-  const countingItem = document.getElementById(`counting-item-${counts[j][0]}`);
+  const sortedItem = document.getElementById(`sorted-item-${counters.i}`);
+  const countingItem = document.getElementById(
+    `counting-item-${arrayGeneration.counts[counters.j][0]}`
+  );
   // Remove selected from classList of previous counter array item
-  if (counterValue === -1) {
+  if (counters.counterValue === -1) {
     const previousCountingItem = document.getElementById(
-      `counting-item-${counts[j - 1][0]}`
+      `counting-item-${arrayGeneration.counts[counters.j - 1][0]}`
     );
     previousCountingItem.classList.remove("selected");
-    counterValue = null;
+    counters.counterValue = null;
   }
   // Keep track of counter value while iterating
-  if (counterValue === null) {
-    counterValue = counts[j][1];
+  if (counters.counterValue === null) {
+    counters.counterValue = arrayGeneration.counts[counters.j][1];
     countingItem.classList.add("selected");
   }
   sortedItem.classList.add("selected");
-  sortedItem.textContent = counts[j][0];
-  i++;
-  counterValue--;
-  if (counterValue === 0) {
+  sortedItem.textContent = arrayGeneration.counts[counters.j][0];
+  counters.i++;
+  counters.counterValue--;
+  if (counters.counterValue === 0) {
     // Reset counterValue and move to next cell in counting array
-    j++;
-    counterValue--;
+    counters.j++;
+    counters.counterValue--;
   }
   sortingId = setTimeout(generateSortedArray, delay);
 }
-
-let countingId;
-let sortingId;
