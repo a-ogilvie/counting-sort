@@ -98,7 +98,7 @@ function generatePageLayout() {
 }
 
 function changeSpeed() {
-  delay = 2200 - this.value;
+  delay = 1600 - this.value;
 }
 
 function generateUnsortedArray() {
