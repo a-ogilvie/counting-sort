@@ -3,6 +3,12 @@ body {
   color: white;
 }
 
+#array-vis {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 #unsorted-array,
 #counting-array,
 #sorted-array {
@@ -15,12 +21,16 @@ body {
 .sorted-item {
   color: black;
   border: 2px solid black;
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
   text-align: center;
   background-color: #55b491;
+  transition: all 1s;
 }
 
 .selected {
   background-color: white;
+  font-size: 120%;
+  font-weight: bold;
+  border-color: red;
 }

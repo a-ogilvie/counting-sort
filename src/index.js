@@ -4,10 +4,10 @@ const Sort = require("./Sort");
 // A link to our styles!
 require("./index.css");
 
-const MAXVALUE = 30;
+const MAXVALUE = 25;
 
 // User-configurable animation settings
-let delay = 1000;
+let delay = 500;
 let arraySize = 30;
 
 // Page elements
@@ -46,7 +46,7 @@ startButton.addEventListener("click", () => {
 });
 
 function changeSpeed() {
-  delay = this.value;
+  delay = 2200 - this.value;
 }
 
 function generatePageLayout() {
@@ -74,11 +74,16 @@ function generatePageLayout() {
 
   // Generate empty counting array vis
   for (let i = 0; i < MAXVALUE; i++) {
+    const tableContainer = document.createElement("div");
+    const tableLabel = document.createElement("div");
     const tableData = document.createElement("div");
+    tableLabel.textContent = `${i}`;
     tableData.id = `counting-item-${i}`;
     tableData.className = "counting-item";
     tableData.textContent = 0;
-    countingTable.appendChild(tableData);
+    tableContainer.appendChild(tableLabel);
+    tableContainer.appendChild(tableData);
+    countingTable.appendChild(tableContainer);
   }
 
   // Generate empty sortedArray vis

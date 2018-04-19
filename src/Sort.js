@@ -35,7 +35,6 @@ class CountingSort {
       }
     }
     this.array = result;
-    console.log(result);
     return countsHistory;
   }
 }
