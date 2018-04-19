@@ -1,5 +1,6 @@
 body {
-  background-color: #55b491;
+  background-color: #316955;
+  color: white;
 }
 
 #unsorted-array,
@@ -12,10 +13,12 @@ body {
 .unsorted-item,
 .counting-item,
 .sorted-item {
+  color: black;
   border: 2px solid black;
   width: 25px;
   height: 25px;
   text-align: center;
+  background-color: #55b491;
 }
 
 .selected {
