@@ -32,6 +32,7 @@ for (let i = 0; i < MAXVALUE; i++) {
   countingTable.appendChild(tableData);
 }
 
+// Generate empty sortedArray vis
 for (let i = 0; i < ARRAYSIZE; i++) {
   const tableData = document.createElement("div");
   tableData.id = `sorted-item-${i}`;
@@ -42,28 +43,17 @@ for (let i = 0; i < ARRAYSIZE; i++) {
 const sort = new Sort(unsortedArray);
 const counts = sort.sort();
 
-// counts.forEach((count) => {
-//   const countItem = document.getElementById(`counting-item-${count[0]}`);
-//   countItem.textContent = count[1];
-// });
-
-// sort.array.forEach((value, index) => {
-//   const sortedItem = document.getElementById(`sorted-item-${index}`);
-//   sortedItem.textContent = value;
-// });
-
 console.log({ counts });
-
-// Loop over first array with consecutive setTimeouts
-// each setTimeout also adds to counting array
 
 const DELAY = 500;
 let i = 0;
 
 function generateCountingArray() {
+  // Stop animating when we reach the end
   if (i >= ARRAYSIZE) {
     clearInterval(countingInterval);
   }
+  // Remove the selected class from the previous iteration
   if (i > 0) {
     const previousArrayItem = document.getElementById(`unsorted-item-${i - 1}`);
     const previousCountItem = document.getElementById(
@@ -72,11 +62,13 @@ function generateCountingArray() {
     previousArrayItem.classList.remove("selected");
     previousCountItem.classList.remove("selected");
   }
+  // Reset the counter and start the next animation
   if (i === ARRAYSIZE) {
     i = 0;
     sortingInterval = setInterval(generateSortedArray, DELAY);
     return;
   }
+  // Add selected class and insert correct number
   const arrayItem = document.getElementById(`unsorted-item-${i}`);
   const countItem = document.getElementById(
     `counting-item-${unsortedArray[i]}`
@@ -85,16 +77,19 @@ function generateCountingArray() {
   countItem.classList.add("selected");
   countItem.textContent = Number(countItem.textContent) + 1;
 
+  // Advance index counter
   i++;
 }
 
-let nextCount = null;
+let counterValue = null;
 let j = 0;
 
 function generateSortedArray() {
+  // Stop animating when we reach the end
   if (j >= counts.length) {
     clearInterval(sortingInterval);
   }
+  // Clear selected class from previous iteration
   if (i > 0) {
     const previousSortedItem = document.getElementById(`sorted-item-${i - 1}`);
     const previousCountingItem = document.getElementById(
@@ -103,32 +98,29 @@ function generateSortedArray() {
     previousSortedItem.classList.remove("selected");
     previousCountingItem.classList.remove("selected");
   }
+  // Finish here when we reach the end
   if (i === ARRAYSIZE) {
     i = 0;
     return;
   }
+  // Animate!
   const sortedItem = document.getElementById(`sorted-item-${i}`);
   const countingItem = document.getElementById(`counting-item-${counts[j][0]}`);
-  if (nextCount === null) {
-    nextCount = counts[j][1];
+  // Keep track of counter value while iterating
+  if (counterValue === null) {
+    counterValue = counts[j][1];
   }
   countingItem.classList.add("selected");
   sortedItem.classList.add("selected");
   sortedItem.textContent = counts[j][0];
   i++;
-  nextCount--;
-  if (nextCount === 0) {
+  counterValue--;
+  if (counterValue === 0) {
+    // Reset counterValue and move to next cell in counting array
     j++;
-    nextCount = null;
+    counterValue = null;
   }
 }
 
 let countingInterval = setInterval(generateCountingArray, DELAY);
 let sortingInterval;
-
-// Use another run of setTimeouts to loop over counting array
-// each setTimeout also adds to sorted array
-
-// REMEMBER
-// Create a class which adds a highlight to an array cell,
-// and add it then remove it again sequentially
