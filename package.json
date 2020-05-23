@@ -8,8 +8,10 @@
     "test:mocha": "mocha --reporter nyan",
     "lint": "eslint --fix --ext .js src test app.js",
     "test": "yarn test:mocha && yarn lint",
-    "start": "webpack --watch --progress --colors",
+    "build": "webpack --watch --progress --colors",
+    "postinstall": "webpack",
     "serve": "nodemon app.js",
+    "start": "node app.js",
     "precommit": "pretty-quick --staged"
   },
   "repository": {
